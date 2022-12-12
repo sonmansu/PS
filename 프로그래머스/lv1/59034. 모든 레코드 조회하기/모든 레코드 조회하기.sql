@@ -1,0 +1,4 @@
+-- 코드를 입력하세요
+SELECT * # 모든 컬럼 출력
+FROM ANIMAL_INS
+ORDER BY ANIMAL_ID
