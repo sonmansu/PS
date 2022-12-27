@@ -1,40 +1,33 @@
-const fs = require("fs");
-const filePath = process.platform === "linux" ? "/dev/stdin" : "./input.txt";
-let input = fs.readFileSync(filePath).toString().split("\n");
+const fs = require('fs');
+const filePath = process.platform === 'linux' ? '/dev/stdin' : './input.txt';
+let inp = fs.readFileSync(filePath).toString().replace(/\r/g, '').trim().split('\n');
 
-const [n, m] = input[0].split(' ').map(Number);
+let [n, m] = inp[0].split(' ').map(Number);
+let chk = Array.from(new Array(n), () => new Array(m).fill(0))
+inp = inp.slice(1);
+let dx = [1, 0, -1, 0];
+let dy = [0, -1, 0, 1];
 
-let maze = Array.from(Array(n + 2), () => Array(m + 2).fill(0));
-let visited = Array.from(Array(n + 2), () => Array(m + 2).fill(0));
+let isValidCoord = (y, x) => y >= 0 && y < n && x >= 0 && x < m;
+let bfs = () => {
+    chk[0][0] = 1;
+    let q = [[0, 0, 1]];
+    while (q.length > 0) {
+        let [y, x, cnt] = q.shift();
 
-for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-        maze[i][j] = input[i][j - 1];
-    }
-}
-
-const dy = [-1, 0, 1, 0];
-const dx = [0, 1, 0, -1];
-
-function bfs() {
-    let queue = [ [1, 1, 1] ];
-    while (queue.length !== 0) {
-        let [sy, sx, cnt] = queue.shift();
-        if (sy === n && sx === m) {
-            console.log(cnt);
-            return;
-        }
         for (let i = 0; i < 4; i++) {
-            const ny = sy + dy[i];
-            const nx = sx + dx[i];
-            const ncnt = cnt + 1;
-            if (maze[ny][nx] === '1' && !visited[ny][nx]) {
-                queue.push([ny, nx, ncnt]);
-                visited[ny][nx] = 1; 
+            let nx = x + dx[i];
+            let ny = y + dy[i];
+            if (isValidCoord(ny, nx) && !chk[ny][nx] && inp[ny][nx] === '1') {
+                if (ny === n - 1 && nx === m - 1) {
+                    console.log(cnt + 1);
+                    return;
+                }
+                chk[ny][nx] = 1;
+                q.push([ny, nx, cnt + 1]);
             }
         }
     }
-    
 }
 
 bfs();
