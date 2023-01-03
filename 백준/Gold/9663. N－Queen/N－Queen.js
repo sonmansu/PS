@@ -1,47 +1,51 @@
-const fs = require("fs");
-const filePath = process.platform === "linux" ? "/dev/stdin" : "./input.txt";
-let n = Number(fs.readFileSync(filePath).toString());
-let chess = Array.from(Array(n), () => new Array(n).fill(0));
+const fs = require('fs');
+const filePath = process.platform === 'linux' ? '/dev/stdin' : './input.txt';
+let n = +fs.readFileSync(filePath).toString().replace(/\r/g, '').trim();
+let chess = Array.from(new Array(n), () => new Array(n).fill(0));
+let isValidCoord = (y, x) => y >= 0 && y < n && x >= 0 && x < n;
 let cnt = 0;
 
-function func(k) {
+let func = k => {
     if (k === n) {
         cnt++;
         return;
     }
-    let i;
-    for (i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
         if (chess[k][i] === 0) {
-            chess[k][i] = -1; // put queen
-            // 세로 비활성화
-            for (let y = k + 1; y < n; y++) {
-                chess[y][i]++;
-            }
-            // 대각선 비활성화 왼쪽
-            for (let y = k + 1, x = i - 1; y < n && x >= 0; y++, x--) {
+            // chess[k][i]++;
+
+            // 체스판 비활성화
+            // 왼쪽 대각선
+            for (let y = k + 1, x = i - 1; isValidCoord(y, x); y++, x--) {
                 chess[y][x]++;
-            } // 오른쪽
-            for (let y = k + 1, x = i + 1; y < n && x < n; y++, x++) {
+            }
+            // 오른쪽 대각선
+            for (let y = k + 1, x = i + 1; isValidCoord(y, x); y++, x++) {
+                chess[y][x]++;
+            }
+            // 아래 직선
+            for (let y = k + 1, x = i; isValidCoord(y, x); y++) {
                 chess[y][x]++;
             }
 
-            func(k + 1);
-            // 비활성 해제
-            chess[k][i] = 0;
-            for (let y = k + 1; y < n; y++) {
-                chess[y][i] = !chess[y][i] ? 0 : chess[y][i] - 1;
+            func(k + 1)
+            // 체스판 활성화
+            // 왼쪽 대각선
+            for (let y = k + 1, x = i - 1; isValidCoord(y, x); y++, x--) {
+                chess[y][x]--;
             }
-            // 대각선 비활성화
-            for (let y = k + 1, x = i - 1; y < n && x >= 0; y++, x--) {
-                chess[y][x] = !chess[y][x] ? 0 : chess[y][x] - 1;
+            // 오른쪽 대각선
+            for (let y = k + 1, x = i + 1; isValidCoord(y, x); y++, x++) {
+                chess[y][x]--;
             }
-            for (let y = k + 1, x = i + 1; y < n && x < n; y++, x++) {
-                chess[y][x] = !chess[y][x] ? 0 : chess[y][x] - 1;
+            // 아래 직선
+            for (let y = k + 1, x = i; isValidCoord(y, x); y++) {
+                chess[y][x]--;
             }
         }
     }
-
 }
 
 func(0);
+
 console.log(cnt);
