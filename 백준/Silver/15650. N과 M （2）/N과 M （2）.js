@@ -6,27 +6,19 @@ let isUsed = new Array(n + 1).fill(0);
 let arr = new Array(m);
 let startNum = 1;
 
-let func = (k) => {
-    if (k === m) {
+let func = (cnt, usedNum) => {
+    if (cnt === m) {
         console.log(arr.join(' '));
         return;
     }
-    if (k === 0) {
-        startNum = 1;
-    } else {
-        let needToFill = m - k;
-        let available = n - arr[k - 1];
-        if (available < needToFill) return;
-        startNum = arr[k - 1] + 1;
-    }
-    for (let i = startNum; i <= n; i++) {
+    for (let i = usedNum + 1; i <= n; i++) {
         if (!isUsed[i]) {
-            arr[k] = i;
+            arr[cnt] = i;
             isUsed[i] = 1;
-            func(k + 1);
+            func(cnt + 1, i);
             isUsed[i] = 0;
         }
     }
 }
 
-func(0);
+func(0, 0);
